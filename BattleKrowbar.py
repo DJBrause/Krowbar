@@ -4,23 +4,38 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.anchorlayout import AnchorLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.button import MDIconButton, MDFillRoundFlatIconButton
+from kivymd.uix.textfield import MDTextFieldRect, MDTextField
 from kivy.uix.scrollview import ScrollView
 from kivy.core.window import Window
-from kivymd.toast.androidtoast.androidtoast import toast        # for windows delete .androidtoast.androidtoast
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.graphics import Rectangle, Color
+from kivymd.toast import toast        # for android add .androidtoast.androidtoast
+from kivy.graphics.instructions import Canvas
 
 class KrowBarApp(MDApp):
 
     def build(self):
-        self.loaded_values = [1, 0, 0, 0, 0, 0]
+        screen_manager = ScreenManager()
+        self.loaded_values = [1, 0, 0, 0, 0, 0] # round num, cp, primary obj, 1st secondary, 2nd secondary, 3rd secondary
         self.update_values()
         self.theme_cls.primary_palette = "Green"
+
+        # Game counters screen and backgrgound color
+
+        counters = Screen(name="Counters")
+        with counters.canvas:
+            c = Color(0, 25.1/100, 12.16/100, 1) # R, G, B, Transparency
+            Rectangle(pos = (0,0), size = Window.size, color = c)
+
+        screen_manager.add_widget(counters)
 
         # SCROLLVIEW
 
         scroll = ScrollView()
+        counters.add_widget(scroll)
 
         # MAIN GRID
-        app_grid = GridLayout(cols=1, spacing=40, size_hint_y=None)
+        app_grid = GridLayout(cols=1, spacing=100, size_hint_y=None)
         app_grid.padding = [Window.width/40,Window.height/20,Window.width/40,Window.height/4]  # [left,top,right,bottom]
         app_grid.bind(minimum_height=app_grid.setter('height'))
         scroll.add_widget(app_grid)
@@ -110,7 +125,11 @@ class KrowBarApp(MDApp):
         sec1_parent_grid.rows = 2
         sec1_parent_grid.adaptive_height = True
 
-        sec1_label = MDLabel(text='1st Secondary Objective Points:')
+
+        sec1_label = MDTextField()
+        sec1_label.hint_text ='1st Secondary Objective Points:'
+        sec1_label.multiline = False
+        #sec1_label = MDLabel(text='1st Secondary Objective Points:')
         sec1_label.halign = 'center'
         sec1_parent_grid.add_widget(sec1_label)
         app_grid.add_widget(sec1_parent_grid)
@@ -131,12 +150,16 @@ class KrowBarApp(MDApp):
 
         # VP SECONDARY 2
 
+
         sec2_parent_grid = MDGridLayout()
         sec2_parent_grid.cols = 1
         sec2_parent_grid.rows = 2
         sec2_parent_grid.adaptive_height = True
 
-        sec2_label = MDLabel(text='2nd Secondary Objective Points:')
+        sec2_label = MDTextField()
+        sec2_label.hint_text = '2nd Secondary Objective Points:'
+        sec2_label.multiline = False
+        #sec2_label = MDLabel(text='2nd Secondary Objective Points:')
         sec2_label.halign = 'center'
         sec2_parent_grid.add_widget(sec2_label)
         app_grid.add_widget(sec2_parent_grid)
@@ -162,7 +185,10 @@ class KrowBarApp(MDApp):
         sec3_parent_grid.rows = 2
         sec3_parent_grid.adaptive_height = True
 
-        sec3_label = MDLabel(text='3rd Secondary Objective Points:')
+        sec3_label = MDTextField()
+        sec3_label.hint_text = '3rd Secondary Objective Points:'
+        sec3_label.multiline = False
+        #sec3_label = MDLabel(text='3rd Secondary Objective Points:')
         sec3_label.halign = 'center'
         sec3_parent_grid.add_widget(sec3_label)
         app_grid.add_widget(sec3_parent_grid)
@@ -208,19 +234,24 @@ class KrowBarApp(MDApp):
         reset_button_anchor.add_widget(reset_button)
         bottom_grid.add_widget(reset_button_anchor)
 
-        return scroll
+        return screen_manager
 
     def increase_round(self, obj):
         if self.loaded_values[0] <= 4:
             self.loaded_values[0] += 1
+            self.loaded_values[1] += 1
             self.round_counter.text = str(self.loaded_values[0])
+            self.cp_counter.text = str(self.loaded_values[1])
         else:
             pass
 
     def decrease_round(self, obj):
         if self.loaded_values[0] >= 2:
             self.loaded_values[0] -= 1
+            if self.loaded_values[1] > 0:
+                self.loaded_values[1] -= 1
             self.round_counter.text = str(self.loaded_values[0])
+            self.cp_counter.text = str(self.loaded_values[1])
         else:
             pass
 
