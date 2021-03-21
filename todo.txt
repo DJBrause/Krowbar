@@ -1,7 +1,0 @@
-Logo/bgcolor
-
-Scroll - done
-
-Reset Button
-
-Records saving to .txt
