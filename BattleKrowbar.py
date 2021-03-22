@@ -5,40 +5,52 @@ from kivy.uix.anchorlayout import AnchorLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.button import MDIconButton, MDFillRoundFlatIconButton
 from kivymd.uix.textfield import MDTextFieldRect, MDTextField
+from kivymd.uix.menu import MDDropdownMenu
 from kivy.uix.scrollview import ScrollView
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Rectangle, Color
-from kivymd.toast import toast        # for android add .androidtoast.androidtoast
+from kivymd.toast import toast        # for android make it kivymd.toast.androidtoast.androidtoast
 from kivy.graphics.instructions import Canvas
 
 class KrowBarApp(MDApp):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.active_color = [1,1,1,1]
 
     def build(self):
         screen_manager = ScreenManager()
         self.loaded_values = [1, 0, 0, 0, 0, 0] # round num, cp, primary obj, 1st secondary, 2nd secondary, 3rd secondary
         self.update_values()
-        self.theme_cls.primary_palette = "Green"
+        self.theme_cls.primary_palette = "Gray"
+        self.theme_cls.primary_hue = "800"
 
         # Game counters screen and backgrgound color
 
-        counters = Screen(name="Counters")
-        with counters.canvas:
-            c = Color(0, 25.1/100, 12.16/100, 1) # R, G, B, Transparency
-            Rectangle(pos = (0,0), size = Window.size, color = c)
+        self.counters = Screen(name="Counters")
+        self.change_bg_color()
 
-        screen_manager.add_widget(counters)
+        screen_manager.add_widget(self.counters)
 
         # SCROLLVIEW
 
-        scroll = ScrollView()
-        counters.add_widget(scroll)
+        self.scroll = ScrollView()
+        self.counters.add_widget(self.scroll)
+
+        # MENU
+        self.menu_button = MDIconButton(icon='format-color-fill', on_release=self.menu_open)
+        self.menu_button.pos_hint = {'center_x': .9, 'center_y': .1}
+        self.menu_button.md_bg_color = (1, 1, 1, 1)
+        items = [{"text": "Ceramic White"}, {"text": "Loyal Angels Green"}, {"text": "Space Doggos Gray"},
+                 {"text": "Codex Blue"}, {"text": "Vampire Angels Red"}, {"text": "Gray Nights"}, {"text": "Stubborn Fists Yellow"}]
+        self.menu = MDDropdownMenu(caller=self.menu_button, items=items, callback=self.menu_callback, width_mult=5)
+        self.counters.add_widget(self.menu_button)
 
         # MAIN GRID
         app_grid = GridLayout(cols=1, spacing=100, size_hint_y=None)
         app_grid.padding = [Window.width/40,Window.height/20,Window.width/40,Window.height/4]  # [left,top,right,bottom]
         app_grid.bind(minimum_height=app_grid.setter('height'))
-        scroll.add_widget(app_grid)
+        self.scroll.add_widget(app_grid)
 
         # ROUND COUNTER
 
@@ -236,6 +248,9 @@ class KrowBarApp(MDApp):
 
         return screen_manager
 
+    def menu_open(self, obj):
+        self.menu.open()
+
     def increase_round(self, obj):
         if self.loaded_values[0] <= 4:
             self.loaded_values[0] += 1
@@ -364,7 +379,90 @@ class KrowBarApp(MDApp):
         self.sec2_counter.text = str(self.loaded_values[4])
         self.sec3_counter.text = str(self.loaded_values[5])
 
-    def wakawaka(self, object):
+    def menu_callback(self, menu_item):
+        if menu_item.text == "Loyal Angels Green":
+            self.loyal_angels_green()
+        if menu_item.text == "Space Doggos Gray":
+            self.cosmic_doggos_gray()
+        if menu_item.text == "Vampire Angels Red":
+            self.angel_red()
+        if menu_item.text == "Gray Nights":
+            self.gray_nights()
+        if menu_item.text == "Stubborn Fists Yellow":
+            self.fists_yellow()
+        if menu_item.text == "Ceramic White":
+            self.ceramic_white()
+        if menu_item.text == "Codex Blue":
+            self.codex_blue()
+
+    def loyal_angels_green(self):
+        self.active_color = [0, 25.1 / 100, 12.16 / 100, 1]
+        self.menu_button.md_bg_color = (11.76 / 100, 45.1 / 100, 19.22 / 100, 1)
+        self.theme_cls.primary_palette = "Green"
+        self.theme_cls.primary_hue = "600"
+        self.change_bg_color()
+        self.reset_canvas_contents()
+
+    def fists_yellow(self):
+        self.active_color = [99.22 / 100, 72.16 / 100, 14.51 / 100, 1]
+        self.menu_button.md_bg_color = (76.08 / 100, 9.8 / 100, 12.16 / 100, 1)
+        self.theme_cls.primary_palette = "DeepOrange"
+        self.theme_cls.primary_hue = "700"
+        self.change_bg_color()
+        self.reset_canvas_contents()
+
+    def codex_blue(self):
+        self.active_color = [5.1 / 100, 25.1 / 100, 49.8 / 100, 1]
+        self.menu_button.md_bg_color = (25.88 / 100, 44.71 / 100, 72.16 / 100, 1)
+        self.theme_cls.primary_palette = "Red"
+        self.theme_cls.primary_hue = "700"
+        self.change_bg_color()
+        self.reset_canvas_contents()
+
+    def gray_nights(self):
+        self.active_color = [56.47 / 100, 65.88 / 100, 65.88 / 100, 1]
+        self.menu_button.md_bg_color = (78.04 / 100, 87.84 / 100, 85.1 / 100, 1)
+        self.theme_cls.primary_palette = "BlueGray"
+        self.theme_cls.primary_hue = "900"
+        self.change_bg_color()
+        self.reset_canvas_contents()
+
+    def angel_red(self):
+        self.active_color = [60.39 / 100, 6.67 / 100, 8.24 / 100, 1]
+        self.menu_button.md_bg_color = (76.08 / 100, 9.8 / 100, 12.16 / 100, 1)
+        self.theme_cls.primary_palette = "Orange"
+        self.theme_cls.primary_hue = "800"
+        self.change_bg_color()
+        self.reset_canvas_contents()
+
+    def cosmic_doggos_gray(self):
+        self.active_color = [32.94 / 100, 45.88 / 100, 53.33 / 100, 1]
+        self.menu_button.md_bg_color = (44.31 / 100, 60.78 / 100, 71.76 / 100, 1)
+        self.theme_cls.primary_palette = "BlueGray"
+        self.theme_cls.primary_hue = "900"
+        self.change_bg_color()
+        self.reset_canvas_contents()
+
+    def ceramic_white(self):
+        self.active_color = [1, 1, 1, 1]
+        self.menu_button.md_bg_color = (1, 1, 1, 1)
+        self.theme_cls.primary_palette = "Gray"
+        self.theme_cls.primary_hue = "800"
+        self.change_bg_color()
+        self.reset_canvas_contents()
+
+    def change_bg_color(self):
+        with self.counters.canvas:
+            Color(rgba=self.active_color)
+            self.r = Rectangle(pos=(0, 0), size=Window.size)
+
+    def reset_canvas_contents(self):
+        self.counters.remove_widget(self.scroll)
+        self.counters.add_widget(self.scroll)
+        self.counters.remove_widget(self.menu_button)
+        self.counters.add_widget(self.menu_button)
+
+    def wakawaka(self):
         print("waka waka")
 
 
